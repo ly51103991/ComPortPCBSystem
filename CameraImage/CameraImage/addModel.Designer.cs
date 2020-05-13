@@ -65,11 +65,11 @@
             this.hWindowControl1.BackColor = System.Drawing.Color.Black;
             this.hWindowControl1.BorderColor = System.Drawing.Color.Black;
             this.hWindowControl1.ImagePart = new System.Drawing.Rectangle(0, 0, 640, 480);
-            this.hWindowControl1.Location = new System.Drawing.Point(73, 12);
+            this.hWindowControl1.Location = new System.Drawing.Point(151, 94);
             this.hWindowControl1.Name = "hWindowControl1";
-            this.hWindowControl1.Size = new System.Drawing.Size(320, 240);
+            this.hWindowControl1.Size = new System.Drawing.Size(169, 153);
             this.hWindowControl1.TabIndex = 6;
-            this.hWindowControl1.WindowSize = new System.Drawing.Size(320, 240);
+            this.hWindowControl1.WindowSize = new System.Drawing.Size(169, 153);
             // 
             // addModel
             // 

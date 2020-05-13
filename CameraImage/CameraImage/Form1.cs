@@ -68,7 +68,7 @@ namespace CameraImage
         {           
             addModel(getCameraImage());                      
         }
-
+        int a = 0, b = 0,c=0;
         private void checkModel(HObject ho_Image1,HTuple hv_ModelID1)
         {            
             HTuple hv_Row = new HTuple(), hv_Column = new HTuple();
@@ -77,12 +77,21 @@ namespace CameraImage
             HOperatorSet.FindShapeModel(ho_Image1, hv_ModelID1, 0, (new HTuple(360)).TupleRad()
                 , 0.5, 1, 0.5, "least_squares", 0, 0.9, out hv_Row, out hv_Column, out hv_Angle,
                 out hv_Score);
-            //if ((int)(new HTuple((new HTuple(hv_Row1.TupleLength())).TupleEqual(1))) != 0)
-            if(hv_Score>0)
-            {
-                MessageBox.Show("找到了！");
+            //if ((int)(new HTuple((new HTuple(hv_Row1.TupleLength())).TupleEqual(1))) != 0)           
+            if (hv_Score > 0)
+            {                
+                pictureBox1.BackColor = Color.Green;
+                a++;
+                TrueNum.Text = a.ToString();
             }
-            else MessageBox.Show("没找到了！");
+            else
+            {
+                pictureBox1.BackColor = Color.Red;
+                b++;
+                WrongNum.Text = b.ToString();
+            }
+            c = a + b;
+            allNum.Text = c.ToString();
         }
 
         private void addModel(HObject hoImage)
