@@ -111,7 +111,7 @@ namespace CameraImage
             HTuple hv_Angle = new HTuple(), hv_Score = new HTuple();
             hv_Row.Dispose(); hv_Column.Dispose(); hv_Angle.Dispose(); hv_Score.Dispose();
             HOperatorSet.FindShapeModel(ho_Image1, hv_ModelID1, 0, (new HTuple(360)).TupleRad()
-                , 0.8, 0, 0.5, "least_squares_high", 0, 0.9, out hv_Row, out hv_Column, out hv_Angle,
+                , 0.7, 0, 0.5, "least_squares", 0, 0.9, out hv_Row, out hv_Column, out hv_Angle,
                 out hv_Score);
             //if ((int)(new HTuple((new HTuple(hv_Row1.TupleLength())).TupleEqual(1))) != 0)           
             if (hv_Score > 0)

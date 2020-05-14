@@ -37,7 +37,7 @@ namespace CameraImage
         {
             if (modelName.Text != "") { 
             HOperatorSet.CreateShapeModel(ho_ImageReduced, "auto", 0, (new HTuple(360)).TupleRad()
-               , "auto", "auto", "ignore_local_polarity", "auto", "auto", out hv_ModelID);
+               , "auto", "auto", "ignore_color_polarity", "auto", "auto", out hv_ModelID);
             //将创建的模板存成指定路径的文件            
             HOperatorSet.WriteShapeModel(hv_ModelID, "f:/modelFiles/"+ DateTime.Now.Second.ToString() + "-" + modelName.Text+".shm");
                 MessageBox.Show("添加成功！");
