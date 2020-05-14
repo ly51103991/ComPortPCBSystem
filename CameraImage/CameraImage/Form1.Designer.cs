@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             this.hWindowControl1 = new HalconDotNet.HWindowControl();
             this.button2 = new System.Windows.Forms.Button();
             this.btnAddModel = new System.Windows.Forms.Button();
@@ -40,6 +41,7 @@
             this.label3 = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
             this.allNum = new System.Windows.Forms.Label();
+            this.timer1 = new System.Windows.Forms.Timer(this.components);
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
             // 
@@ -56,11 +58,11 @@
             // 
             // button2
             // 
-            this.button2.Location = new System.Drawing.Point(114, 350);
+            this.button2.Location = new System.Drawing.Point(135, 350);
             this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(96, 23);
+            this.button2.Size = new System.Drawing.Size(75, 23);
             this.button2.TabIndex = 2;
-            this.button2.Text = "单点图像检测";
+            this.button2.Text = "触发信号";
             this.button2.UseVisualStyleBackColor = true;
             this.button2.Click += new System.EventHandler(this.RealTimeSnap_Click);
             // 
@@ -76,11 +78,13 @@
             // 
             // modelIsUsing
             // 
+            this.modelIsUsing.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.modelIsUsing.FormattingEnabled = true;
             this.modelIsUsing.Location = new System.Drawing.Point(228, 296);
             this.modelIsUsing.Name = "modelIsUsing";
             this.modelIsUsing.Size = new System.Drawing.Size(98, 20);
             this.modelIsUsing.TabIndex = 5;
+            this.modelIsUsing.SelectedValueChanged += new System.EventHandler(this.modelIsUsing_SelectedValueChanged);
             // 
             // label1
             // 
@@ -154,6 +158,11 @@
             this.allNum.TabIndex = 13;
             this.allNum.Text = "0";
             // 
+            // timer1
+            // 
+            this.timer1.Interval = 2000;
+            this.timer1.Tick += new System.EventHandler(this.timer1_Tick);
+            // 
             // Form1
             // 
             this.ClientSize = new System.Drawing.Size(517, 528);
@@ -191,6 +200,7 @@
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.Label allNum;
+        private System.Windows.Forms.Timer timer1;
     }
 }
 
