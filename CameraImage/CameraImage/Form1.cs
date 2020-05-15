@@ -16,6 +16,7 @@ namespace CameraImage
     {
         HTuple hv_AcqHandle = null;
         HTuple hv_ModelID1 = null;
+        bool isCamera = true;
         public Form1()
         {
             InitializeComponent();
@@ -29,13 +30,13 @@ namespace CameraImage
             catch (Exception)
             {
                 MessageBox.Show("未检测到相机！");
-                btnAddModel.Enabled = false;
-                button2.Enabled = false;
+                isCamera = false;
             }          
         }
         public void Form1_Load(object sender, EventArgs e)
         {
-            getModelFiles();
+            if (isCamera) getModelFiles();
+            else this.Close();
         }
         public void getModelFiles()
         {
@@ -43,13 +44,13 @@ namespace CameraImage
             string[] modelDir = Directory.GetFiles("f:/modelFiles");
             if (modelDir.Length != 0)
             {
+                button2.Enabled = true;
                 for (int i = 0; i < modelDir.Length; i++)
                 {
                     string[] strs = modelDir[i].Split('\\');
                     modelIsUsing.Items.Add(strs[1]);
                 }
                 hv_ModelID1 = new HTuple();//正在使用的模板
-                button2.Enabled = true;
                 modelIsUsing.SelectedIndex = 0;
                 MessageBox.Show("创建模板对象");
             }
@@ -78,8 +79,17 @@ namespace CameraImage
         }
         private void RealTimeSnap_Click(object sender, EventArgs e)
         {
-            timer1.Enabled = true;
-            timer1.Start();
+            try
+            {
+                timer1.Enabled = true;
+                timer1.Start();
+            }
+            catch (Exception ex)
+            {
+
+                MessageBox.Show(ex.ToString());;
+            }
+            
             //hv_ModelID1.Dispose();
            // HOperatorSet.ReadShapeModel("f:/modelFiles/" + modelIsUsing.SelectedItem.ToString(), out hv_ModelID1);
                // checkModel(getCameraImage(), hv_ModelID1);
@@ -111,7 +121,7 @@ namespace CameraImage
             HTuple hv_Angle = new HTuple(), hv_Score = new HTuple();
             hv_Row.Dispose(); hv_Column.Dispose(); hv_Angle.Dispose(); hv_Score.Dispose();
             HOperatorSet.FindShapeModel(ho_Image1, hv_ModelID1, 0, (new HTuple(360)).TupleRad()
-                , 0.7, 0, 0.5, "least_squares", 0, 0.9, out hv_Row, out hv_Column, out hv_Angle,
+                , 0.8, 1, 0, "least_squares", 0, 0.8, out hv_Row, out hv_Column, out hv_Angle,
                 out hv_Score);
             //if ((int)(new HTuple((new HTuple(hv_Row1.TupleLength())).TupleEqual(1))) != 0)           
             if (hv_Score > 0)
@@ -134,29 +144,27 @@ namespace CameraImage
         {
             HTuple hv_Width = new HTuple(), hv_Height = new HTuple();
             HTuple hv_Row1 = new HTuple();
-            //HTuple hv_AcqHandle = null;
-            HTuple hv_WindowHandle = new HTuple();
-            HTuple hv_Column1 = new HTuple();
-            HTuple hv_Row2 = new HTuple(), hv_Column2 = new HTuple();
             HTuple hv_ModelID = new HTuple();
-            HObject ho_Rectangle, ho_ImageReduced;
-            HOperatorSet.GenEmptyObj(out ho_Rectangle);
-            HOperatorSet.GenEmptyObj(out ho_ImageReduced);
-            hv_Width.Dispose(); hv_Height.Dispose();
-            HOperatorSet.GetImageSize(hoImage, out hv_Width, out hv_Height);
+            HObject ho_Circle, ho_ImageReduced;
+            //HTuple hv_AcqHandle = null;
+            HTuple hv_WindowHandle = new HTuple(), hv_Row = new HTuple();
+            HTuple hv_Column = new HTuple(), hv_Radius = new HTuple();
+            // Initialize local and output iconic variables 
+            HOperatorSet.GenEmptyObj(out ho_Circle);
+            HOperatorSet.GenEmptyObj(out ho_ImageReduced);            
             HOperatorSet.SetWindowAttr("background_color", "black");
-            HOperatorSet.OpenWindow(0, 0, hv_Width/2, hv_Height/2, 0, "visible", "", out hv_WindowHandle);
+            HOperatorSet.OpenWindow(0, 0, 512, 512, 0, "visible", "", out hv_WindowHandle);
             HDevWindowStack.Push(hv_WindowHandle);
             if (HDevWindowStack.IsOpen())
             {
                 HOperatorSet.DispObj(hoImage, HDevWindowStack.GetActive());
             }
-            hv_Row1.Dispose(); hv_Column1.Dispose(); hv_Row2.Dispose(); hv_Column2.Dispose();
-            HOperatorSet.DrawRectangle1(hv_WindowHandle, out hv_Row1, out hv_Column1, out hv_Row2,
-                out hv_Column2);
-            HOperatorSet.GenRectangle1(out ho_Rectangle, hv_Row1, hv_Column1, hv_Row2, hv_Column2);
-
-            HOperatorSet.ReduceDomain(hoImage, ho_Rectangle, out ho_ImageReduced);
+            hv_Row.Dispose(); hv_Column.Dispose(); hv_Radius.Dispose();
+            HOperatorSet.DrawCircle(hv_WindowHandle, out hv_Row, out hv_Column, out hv_Radius);
+            ho_Circle.Dispose();
+            HOperatorSet.GenCircle(out ho_Circle, hv_Row, hv_Column, hv_Radius);
+            ho_ImageReduced.Dispose();
+            HOperatorSet.ReduceDomain(hoImage, ho_Circle, out ho_ImageReduced);
             HOperatorSet.CloseWindow(hv_WindowHandle);
             addModel aModel = new addModel(hv_ModelID, ho_ImageReduced);
             aModel.ShowDialog();
