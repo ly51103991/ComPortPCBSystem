@@ -31,9 +31,6 @@
             this.components = new System.ComponentModel.Container();
             this.hWindowControl1 = new HalconDotNet.HWindowControl();
             this.button2 = new System.Windows.Forms.Button();
-            this.btnAddModel = new System.Windows.Forms.Button();
-            this.modelIsUsing = new System.Windows.Forms.ComboBox();
-            this.label1 = new System.Windows.Forms.Label();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.TrueNum = new System.Windows.Forms.Label();
             this.WrongNum = new System.Windows.Forms.Label();
@@ -50,50 +47,21 @@
             this.hWindowControl1.BackColor = System.Drawing.Color.Black;
             this.hWindowControl1.BorderColor = System.Drawing.Color.Black;
             this.hWindowControl1.ImagePart = new System.Drawing.Rectangle(0, 0, 640, 480);
-            this.hWindowControl1.Location = new System.Drawing.Point(94, 37);
+            this.hWindowControl1.Location = new System.Drawing.Point(83, 29);
             this.hWindowControl1.Name = "hWindowControl1";
-            this.hWindowControl1.Size = new System.Drawing.Size(320, 240);
+            this.hWindowControl1.Size = new System.Drawing.Size(344, 271);
             this.hWindowControl1.TabIndex = 0;
-            this.hWindowControl1.WindowSize = new System.Drawing.Size(320, 240);
+            this.hWindowControl1.WindowSize = new System.Drawing.Size(344, 271);
             // 
             // button2
             // 
-            this.button2.Location = new System.Drawing.Point(135, 350);
+            this.button2.Location = new System.Drawing.Point(217, 341);
             this.button2.Name = "button2";
             this.button2.Size = new System.Drawing.Size(75, 23);
             this.button2.TabIndex = 2;
             this.button2.Text = "触发信号";
             this.button2.UseVisualStyleBackColor = true;
             this.button2.Click += new System.EventHandler(this.RealTimeSnap_Click);
-            // 
-            // btnAddModel
-            // 
-            this.btnAddModel.Location = new System.Drawing.Point(300, 350);
-            this.btnAddModel.Name = "btnAddModel";
-            this.btnAddModel.Size = new System.Drawing.Size(75, 23);
-            this.btnAddModel.TabIndex = 4;
-            this.btnAddModel.Text = "添加模板";
-            this.btnAddModel.UseVisualStyleBackColor = true;
-            this.btnAddModel.Click += new System.EventHandler(this.btnAddModel_Click);
-            // 
-            // modelIsUsing
-            // 
-            this.modelIsUsing.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.modelIsUsing.FormattingEnabled = true;
-            this.modelIsUsing.Location = new System.Drawing.Point(228, 296);
-            this.modelIsUsing.Name = "modelIsUsing";
-            this.modelIsUsing.Size = new System.Drawing.Size(98, 20);
-            this.modelIsUsing.TabIndex = 5;
-            this.modelIsUsing.SelectedValueChanged += new System.EventHandler(this.modelIsUsing_SelectedValueChanged);
-            // 
-            // label1
-            // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(169, 299);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(41, 12);
-            this.label1.TabIndex = 6;
-            this.label1.Text = "模板：";
             // 
             // pictureBox1
             // 
@@ -173,13 +141,9 @@
             this.Controls.Add(this.WrongNum);
             this.Controls.Add(this.TrueNum);
             this.Controls.Add(this.pictureBox1);
-            this.Controls.Add(this.label1);
-            this.Controls.Add(this.modelIsUsing);
-            this.Controls.Add(this.btnAddModel);
             this.Controls.Add(this.button2);
             this.Controls.Add(this.hWindowControl1);
             this.Name = "Form1";
-            this.Load += new System.EventHandler(this.Form1_Load);
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
@@ -190,9 +154,6 @@
 
         private HalconDotNet.HWindowControl hWindowControl1;
         private System.Windows.Forms.Button button2;
-        private System.Windows.Forms.Button btnAddModel;
-        private System.Windows.Forms.ComboBox modelIsUsing;
-        private System.Windows.Forms.Label label1;
         private System.Windows.Forms.PictureBox pictureBox1;
         private System.Windows.Forms.Label TrueNum;
         private System.Windows.Forms.Label WrongNum;
