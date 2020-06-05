@@ -32,8 +32,7 @@ namespace CameraImage
                 MessageBox.Show("未检测到相机！");
                 isCamera = false;
             }          
-        }
-       
+        }       
         private void RealTimeSnap_Click(object sender, EventArgs e)
         {
             try
@@ -58,9 +57,9 @@ namespace CameraImage
         {
             string str = Interaction.InputBox("请输入模板名字", "创建模板", "", 100, 100);
             if (str == "") { str = "默认"; };
-            if (false == System.IO.Directory.Exists("f:modelFiles/model-" + str))
+            if (false == Directory.Exists("f:modelFiles/model-" + str))
             {
-                System.IO.Directory.CreateDirectory("f:modelFiles/model-" + str);
+              Directory.CreateDirectory("f:modelFiles/model-" + str);
             }
             else
             {
@@ -84,6 +83,8 @@ namespace CameraImage
             //Image Acquisition 01: Do something
             for (hv_i = 1; (int)hv_i <= 4; hv_i = (int)hv_i + 1)
             {
+                try
+                {             
                 HOperatorSet.GrabImageStart(hv_AcqHandle, -1);
                 if ((int)hv_i!=1) MessageBox.Show("请将要识别物体顺时针旋转"+ ((int)hv_i-1) * 90+"度，再点击确定");
                 else { MessageBox.Show("单击鼠标左键并拖动选择模板区域，右键确定！");}
@@ -105,9 +106,22 @@ namespace CameraImage
                 HOperatorSet.CreateShapeModel(ho_ImageReduced, "auto", 0, (new HTuple(360)).TupleRad()
                     , "auto", "auto", "use_polarity", "auto", "auto", out hv_ModelID);
                 HOperatorSet.WriteShapeModel(hv_ModelID, ("f:modelFiles/model-" + str+"/modle" + hv_i) + ".shm");
-                HOperatorSet.CloseWindow(hv_WindowHandle);
-
-                ho_Image.Dispose();
+                
+                }
+                catch (Exception)
+                {
+                    MessageBox.Show("区域选择出错！请重新添加模板。");
+                    foreach (string file in Directory.GetFileSystemEntries("f:modelFiles/model-" + str))
+                    {
+                        File.Delete(file);
+                    };
+                    Directory.Delete("f:modelFiles/model-" + str);
+                    return;
+                    throw;                   
+                }
+                finally {
+                    HOperatorSet.CloseWindow(hv_WindowHandle);
+                    ho_Image.Dispose();
                 ho_Circle.Dispose();
                 ho_ImageReduced.Dispose();
                 hv_i.Dispose();
@@ -118,6 +132,7 @@ namespace CameraImage
                 hv_Column.Dispose();
                 hv_Radius.Dispose();
                 hv_ModelID.Dispose();
+                }
             }
             MessageBox.Show("模板创建成功！");
             Form1_Load(null,null);
