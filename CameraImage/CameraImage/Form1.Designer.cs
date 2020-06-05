@@ -39,6 +39,7 @@
             this.label4 = new System.Windows.Forms.Label();
             this.allNum = new System.Windows.Forms.Label();
             this.timer1 = new System.Windows.Forms.Timer(this.components);
+            this.btnAddModel = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
             // 
@@ -55,7 +56,7 @@
             // 
             // button2
             // 
-            this.button2.Location = new System.Drawing.Point(217, 341);
+            this.button2.Location = new System.Drawing.Point(128, 338);
             this.button2.Name = "button2";
             this.button2.Size = new System.Drawing.Size(75, 23);
             this.button2.TabIndex = 2;
@@ -131,9 +132,20 @@
             this.timer1.Interval = 3000;
             this.timer1.Tick += new System.EventHandler(this.timer1_Tick);
             // 
+            // btnAddModel
+            // 
+            this.btnAddModel.Location = new System.Drawing.Point(278, 338);
+            this.btnAddModel.Name = "btnAddModel";
+            this.btnAddModel.Size = new System.Drawing.Size(75, 23);
+            this.btnAddModel.TabIndex = 14;
+            this.btnAddModel.Text = "添加模板";
+            this.btnAddModel.UseVisualStyleBackColor = true;
+            this.btnAddModel.Click += new System.EventHandler(this.btnAddModel_Click);
+            // 
             // Form1
             // 
             this.ClientSize = new System.Drawing.Size(517, 528);
+            this.Controls.Add(this.btnAddModel);
             this.Controls.Add(this.allNum);
             this.Controls.Add(this.label4);
             this.Controls.Add(this.label3);
@@ -162,6 +174,7 @@
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.Label allNum;
         private System.Windows.Forms.Timer timer1;
+        private System.Windows.Forms.Button btnAddModel;
     }
 }
 
