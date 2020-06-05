@@ -56,8 +56,7 @@ namespace CameraImage
                 button2.Text = "开始";
                 modelList.Enabled = true;
             }
-        }
-        
+        }       
 
         private void btnAddModel_Click(object sender, EventArgs e)
         {
@@ -194,9 +193,6 @@ namespace CameraImage
                 hv_ModelIDs = hv_ModelIDs.TupleConcat(hv_ModelID3);
                 hv_ModelIDs = hv_ModelIDs.TupleConcat(hv_ModelID4);
             }
-            while (button2.Text=="停止")
-            {
-                HOperatorSet.WaitSeconds(1);
 
                 ho_Image1.Dispose();
                 HOperatorSet.GrabImageAsync(out ho_Image1, hv_AcqHandle, -1);
@@ -240,4 +236,3 @@ namespace CameraImage
             //if ((int)(new HTuple((new HTuple(hv_Row1.TupleLength())).TupleEqual(1))) != 0)                                  
         }
     }
-}
