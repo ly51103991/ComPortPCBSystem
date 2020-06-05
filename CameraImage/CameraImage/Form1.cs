@@ -60,6 +60,8 @@ namespace CameraImage
 
         private void btnAddModel_Click(object sender, EventArgs e)
         {
+            string word = Interaction.InputBox("请输入密码", "身份验证", "", 100, 100);
+            if (word != "123456") { MessageBox.Show("密码错误！"); return; }
             string str = Interaction.InputBox("请输入模板名字", "创建模板", "", 100, 100);
             if (str == "") { str = "默认"; };
             if (false == Directory.Exists("f:modelFiles/model-" + str))
@@ -232,7 +234,5 @@ namespace CameraImage
                   hv_Score.Dispose();
                   hv_ModelIndex.Dispose();*/
             }
-
-            //if ((int)(new HTuple((new HTuple(hv_Row1.TupleLength())).TupleEqual(1))) != 0)                                  
         }
     }
