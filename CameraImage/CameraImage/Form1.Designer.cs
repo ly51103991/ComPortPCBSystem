@@ -40,6 +40,8 @@
             this.allNum = new System.Windows.Forms.Label();
             this.timer1 = new System.Windows.Forms.Timer(this.components);
             this.btnAddModel = new System.Windows.Forms.Button();
+            this.modelList = new System.Windows.Forms.ComboBox();
+            this.label1 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
             // 
@@ -56,7 +58,7 @@
             // 
             // button2
             // 
-            this.button2.Location = new System.Drawing.Point(128, 338);
+            this.button2.Location = new System.Drawing.Point(122, 360);
             this.button2.Name = "button2";
             this.button2.Size = new System.Drawing.Size(75, 23);
             this.button2.TabIndex = 2;
@@ -134,7 +136,7 @@
             // 
             // btnAddModel
             // 
-            this.btnAddModel.Location = new System.Drawing.Point(278, 338);
+            this.btnAddModel.Location = new System.Drawing.Point(319, 360);
             this.btnAddModel.Name = "btnAddModel";
             this.btnAddModel.Size = new System.Drawing.Size(75, 23);
             this.btnAddModel.TabIndex = 14;
@@ -142,9 +144,28 @@
             this.btnAddModel.UseVisualStyleBackColor = true;
             this.btnAddModel.Click += new System.EventHandler(this.btnAddModel_Click);
             // 
+            // modelList
+            // 
+            this.modelList.FormattingEnabled = true;
+            this.modelList.Location = new System.Drawing.Point(206, 315);
+            this.modelList.Name = "modelList";
+            this.modelList.Size = new System.Drawing.Size(121, 20);
+            this.modelList.TabIndex = 15;
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(159, 323);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(41, 12);
+            this.label1.TabIndex = 16;
+            this.label1.Text = "模板：";
+            // 
             // Form1
             // 
             this.ClientSize = new System.Drawing.Size(517, 528);
+            this.Controls.Add(this.label1);
+            this.Controls.Add(this.modelList);
             this.Controls.Add(this.btnAddModel);
             this.Controls.Add(this.allNum);
             this.Controls.Add(this.label4);
@@ -156,6 +177,7 @@
             this.Controls.Add(this.button2);
             this.Controls.Add(this.hWindowControl1);
             this.Name = "Form1";
+            this.Load += new System.EventHandler(this.Form1_Load);
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
@@ -175,6 +197,8 @@
         private System.Windows.Forms.Label allNum;
         private System.Windows.Forms.Timer timer1;
         private System.Windows.Forms.Button btnAddModel;
+        private System.Windows.Forms.ComboBox modelList;
+        private System.Windows.Forms.Label label1;
     }
 }
 
