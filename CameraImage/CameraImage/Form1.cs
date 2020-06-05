@@ -17,6 +17,7 @@ namespace CameraImage
     {
         HTuple hv_AcqHandle = null;
         bool isCamera = true;
+        int a = 0, b = 0, c = 0;
         public Form1()
         {
             InitializeComponent();
@@ -33,25 +34,30 @@ namespace CameraImage
                 isCamera = false;
             }          
         }       
-        private void RealTimeSnap_Click(object sender, EventArgs e)
+        void returnNum()
         {
-            try
-            {
-                timer1.Enabled = true;
-                timer1.Start();
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.ToString());;
-            }
-            
-            //hv_ModelID1.Dispose();
-           // HOperatorSet.ReadShapeModel("f:/modelFiles/" + modelIsUsing.SelectedItem.ToString(), out hv_ModelID1);
-               // checkModel(getCameraImage(), hv_ModelID1);
+            TrueNum.Text = "0";WrongNum.Text = "0";allNum.Text = "0";
+            a = 0; b = 0; c =0;
+            pictureBox1.BackColor = Color.WhiteSmoke;
         }
 
-
-        int a = 0, b = 0,c=0;
+        private void RealTimeSnap_Click(object sender, EventArgs e)
+        {
+            if (button2.Text == "开始")
+            { timer1.Enabled = true;
+            timer1.Start();
+            button2.Text = "停止";
+            returnNum();
+            modelList.Enabled = false; }
+            else 
+            {  
+                timer1.Enabled = false;
+                timer1.Stop();
+                button2.Text = "开始";
+                modelList.Enabled = true;
+            }
+        }
+        
 
         private void btnAddModel_Click(object sender, EventArgs e)
         {
@@ -155,13 +161,8 @@ namespace CameraImage
             checkModel();        }
 
         private void checkModel()
-
-        {      // Local iconic variables 
-
+        {      
             HObject ho_Image1 = null;
-
-            // Local control variables 
-
             HTuple hv_Row = new HTuple();
             HTuple hv_Column = new HTuple();
             HTuple hv_Width = new HTuple(), hv_Height = new HTuple();
@@ -193,7 +194,7 @@ namespace CameraImage
                 hv_ModelIDs = hv_ModelIDs.TupleConcat(hv_ModelID3);
                 hv_ModelIDs = hv_ModelIDs.TupleConcat(hv_ModelID4);
             }
-            while ((int)(1) != 0)
+            while (button2.Text=="停止")
             {
                 HOperatorSet.WaitSeconds(1);
 

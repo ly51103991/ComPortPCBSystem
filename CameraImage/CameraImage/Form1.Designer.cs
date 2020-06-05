@@ -62,7 +62,7 @@
             this.button2.Name = "button2";
             this.button2.Size = new System.Drawing.Size(75, 23);
             this.button2.TabIndex = 2;
-            this.button2.Text = "触发信号";
+            this.button2.Text = "开始";
             this.button2.UseVisualStyleBackColor = true;
             this.button2.Click += new System.EventHandler(this.RealTimeSnap_Click);
             // 
@@ -146,6 +146,7 @@
             // 
             // modelList
             // 
+            this.modelList.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.modelList.FormattingEnabled = true;
             this.modelList.Location = new System.Drawing.Point(206, 315);
             this.modelList.Name = "modelList";
