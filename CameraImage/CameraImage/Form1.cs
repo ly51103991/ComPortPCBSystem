@@ -13,7 +13,7 @@ using System.IO;
 using Microsoft.VisualBasic;
 using Excel = Microsoft.Office.Interop.Excel;
 using System.Runtime.InteropServices;
-
+using MVSDK;
 namespace CameraImage
 {
     public partial class Form1 : Form
@@ -37,8 +37,7 @@ namespace CameraImage
                 modelList.Items.Add(subDir.Name);
             }
             modelList.SelectedIndex = 0;
-            
-            
+                    
             /*HOperatorSet.SetFramegrabberParam(hv_AcqHandle, "TriggerSource", "Line1");
             //下面设置连续采集，上升沿触发，曝光模式等
             HOperatorSet.SetFramegrabberParam(hv_AcqHandle, "AcquisitionMode", "Continuous");
@@ -62,6 +61,8 @@ namespace CameraImage
                 hv_AcqHandle.Dispose();
                 HOperatorSet.OpenFramegrabber("MindVision17_X64", 1, 1, 0, 0, 0, 0, "progressive",
                  8, "Gray", -1, "false", "auto", "oufang", 0, -1, out hv_AcqHandle);
+                checkOnlineTimer.Enabled = true;
+                checkOnlineTimer.Start();
             }
             catch (Exception)
             {
@@ -69,7 +70,27 @@ namespace CameraImage
                 this.Close();
             }
         }
-
+        private void checkOnlineTimer_Tick(object sender, EventArgs e)
+        {
+            HTuple newHandle=hv_AcqHandle.H.TupleIsValidHandle();
+            CameraSdkStatus status = MvApi.CameraConnectTest(newHandle);
+            if (status != 0)
+            {
+                HOperatorSet.SetFramegrabberParam(hv_AcqHandle, "trigger_mode", 1);
+                camStatus.Text = "相机已掉线 正在重连中...";
+                camStatus.ForeColor = Color.Red;
+                button2.Text = "开启";
+                modelList.Enabled = true;
+                btnAddModel.Enabled = false ;
+                button2.Enabled = false;
+                MvApi.CameraReConnect(newHandle);             
+            }else {
+                camStatus.Text = "上线";
+                camStatus.ForeColor = Color.Green;
+                button2.Enabled = true;
+                btnAddModel.Enabled = true;
+            }
+        }
         void returnNum()
         {
             TrueNum.Text = "0";WrongNum.Text = "0";allNum.Text = "0";
@@ -107,19 +128,20 @@ namespace CameraImage
         private void RealTimeSnap_Click(object sender, EventArgs e)
         {
             if (button2.Text == "开启")
-            { //下面开启硬触发
+            {              //下面开启硬触发
                 HOperatorSet.SetFramegrabberParam(hv_AcqHandle, "trigger_mode", 2);
                 HOperatorSet.SetFramegrabberParam(hv_AcqHandle, "grab_timeout", -1);
                 IntPtr ptr = Marshal.GetFunctionPointerForDelegate(delegateCallback);//取回调函数的地址
                 IntPtr ptr1 = GCHandle.Alloc(test, GCHandleType.Pinned).AddrOfPinnedObject();//取test变量的地址
                 HOperatorSet.SetFramegrabberCallback(hv_AcqHandle, "transfer_end", ptr, ptr1);//注册回调函数
                 button2.Text = "关闭";
-            returnNum();
-            modelList.Enabled = false;
+                returnNum();
+                modelList.Enabled = false;
                 btnAddModel.Enabled = false;
             }
             else 
-            {                
+            {
+                HOperatorSet.SetFramegrabberParam(hv_AcqHandle, "trigger_mode", 1);
                 button2.Text = "开启";
                 modelList.Enabled = true;
                 btnAddModel.Enabled = true;
@@ -164,11 +186,10 @@ namespace CameraImage
 
                 xlsApp.ActiveWorkbook.SaveAs("F:\\检测产品数据表.xlsx");*/
             }
-        }       
+        }
 
         private void btnAddModel_Click(object sender, EventArgs e)
         {
-            HOperatorSet.SetFramegrabberParam(hv_AcqHandle, "trigger_mode", 1);
             string word = Interaction.InputBox("请输入密码", "身份验证", "", 100, 100);
             if (word != "123456") { MessageBox.Show("密码错误！"); return; }
             string str = Interaction.InputBox("请输入模板名字", "创建模板", "", 100, 100);
