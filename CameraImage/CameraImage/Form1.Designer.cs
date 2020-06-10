@@ -28,7 +28,6 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.components = new System.ComponentModel.Container();
             this.hWindowControl1 = new HalconDotNet.HWindowControl();
             this.button2 = new System.Windows.Forms.Button();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
@@ -38,7 +37,6 @@
             this.label3 = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
             this.allNum = new System.Windows.Forms.Label();
-            this.timer1 = new System.Windows.Forms.Timer(this.components);
             this.btnAddModel = new System.Windows.Forms.Button();
             this.modelList = new System.Windows.Forms.ComboBox();
             this.label1 = new System.Windows.Forms.Label();
@@ -62,7 +60,7 @@
             this.button2.Name = "button2";
             this.button2.Size = new System.Drawing.Size(75, 23);
             this.button2.TabIndex = 2;
-            this.button2.Text = "开始";
+            this.button2.Text = "开启";
             this.button2.UseVisualStyleBackColor = true;
             this.button2.Click += new System.EventHandler(this.RealTimeSnap_Click);
             // 
@@ -129,11 +127,6 @@
             this.allNum.TabIndex = 13;
             this.allNum.Text = "0";
             // 
-            // timer1
-            // 
-            this.timer1.Interval = 1000;
-            this.timer1.Tick += new System.EventHandler(this.timer1_Tick);
-            // 
             // btnAddModel
             // 
             this.btnAddModel.Location = new System.Drawing.Point(319, 360);
@@ -196,7 +189,6 @@
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.Label allNum;
-        private System.Windows.Forms.Timer timer1;
         private System.Windows.Forms.Button btnAddModel;
         private System.Windows.Forms.ComboBox modelList;
         private System.Windows.Forms.Label label1;

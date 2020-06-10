@@ -11,50 +11,159 @@ using System.Threading;
 using HalconDotNet;
 using System.IO;
 using Microsoft.VisualBasic;
+using Excel = Microsoft.Office.Interop.Excel;
+using System.Runtime.InteropServices;
+
 namespace CameraImage
 {
     public partial class Form1 : Form
     {
-        HTuple hv_AcqHandle = null;
-        bool isCamera = true;
+        public  HTuple hv_AcqHandle = null;
+        public HObject ho_image = null;
+        HalconAPI.HFramegrabberCallback delegateCallback;
         int a = 0, b = 0, c = 0;
         public Form1()
         {
             InitializeComponent();
+        }
+        private void Form1_Load(object sender, EventArgs e)
+        {
+            delegateCallback = takeCameraOne;
+            modelList.Items.Clear();
+            DirectoryInfo dir = new DirectoryInfo("f:modelFiles/");
+            DirectoryInfo[] subDirs = dir.GetDirectories();
+            foreach (DirectoryInfo subDir in subDirs)
+            {
+                modelList.Items.Add(subDir.Name);
+            }
+            modelList.SelectedIndex = 0;
+            checkCamera();
+            //下面开启硬触发
+            HOperatorSet.SetFramegrabberParam(hv_AcqHandle, "trigger_mode", 2);
+            /*HOperatorSet.SetFramegrabberParam(hv_AcqHandle, "TriggerSource", "Line1");
+            //下面设置连续采集，上升沿触发，曝光模式等
+            HOperatorSet.SetFramegrabberParam(hv_AcqHandle, "AcquisitionMode", "Continuous");
+            HOperatorSet.SetFramegrabberParam(hv_AcqHandle, "TriggerSelector", "FrameStart");
+            HOperatorSet.SetFramegrabberParam(hv_AcqHandle, "TriggerActivation", "RisingEdge");
+            HOperatorSet.SetFramegrabberParam(hv_AcqHandle, "ExposureMode", "Timed");
+            //设置曝光时间
+            HOperatorSet.SetFramegrabberParam(hv_AcqHandle, "ExposureTime", 80000.0);
+            //下面为设置用不超时
+            HOperatorSet.SetFramegrabberParam(hv_AcqHandle, "grab_timeout", -1);*/
+            HOperatorSet.SetFramegrabberParam(hv_AcqHandle, "grab_timeout", -1);
+           // IntPtr ptr = Marshal.GetFunctionPointerForDelegate(delegateCallback);//取回调函数的地址
+            //IntPtr ptr1 = GCHandle.Alloc(test, GCHandleType.Pinned).AddrOfPinnedObject();//取test变量的地址
+           // HOperatorSet.SetFramegrabberCallback(hv_AcqHandle, "transfer_end", ptr, ptr1);//注册回调函数
+        }
+        void checkCamera()
+        {
             try
             {
                 hv_AcqHandle = new HTuple();
                 hv_AcqHandle.Dispose();
                 HOperatorSet.OpenFramegrabber("MindVision17_X64", 1, 1, 0, 0, 0, 0, "progressive",
                  8, "Gray", -1, "false", "auto", "oufang", 0, -1, out hv_AcqHandle);
+                btnAddModel.Enabled = true;
+                button2.Enabled = true;
             }
             catch (Exception)
             {
                 MessageBox.Show("未检测到相机！");
-                isCamera = false;
-            }          
-        }       
+                btnAddModel.Enabled = false;
+                button2.Enabled = false;
+                return;
+            }
+        }
+
         void returnNum()
         {
             TrueNum.Text = "0";WrongNum.Text = "0";allNum.Text = "0";
             a = 0; b = 0; c =0;
             pictureBox1.BackColor = Color.WhiteSmoke;
         }
+        private int test = 1;//随便定义的一个变量，后面会取其地址带入回调函数的user_context
 
+        public int takeCameraOne(IntPtr handle,IntPtr context,IntPtr user_context)
+        {
+            try
+            {
+                HOperatorSet.GrabImage(out ho_image, hv_AcqHandle);
+                if (this.hWindowControl1.InvokeRequired)
+                {
+                    this.Invoke(new MethodInvoker(() => {
+                        if (ho_image != null) {
+                        checkModel(ho_image);
+                        }
+                    }));//把图像显示出来（这里是委托方式显示)
+                }
+                else
+                {
+                    checkModel(ho_image);
+                }
+                return 0;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+                return -1;
+            }
+            //checkModel();
+        }
         private void RealTimeSnap_Click(object sender, EventArgs e)
         {
-            if (button2.Text == "开始")
-            { timer1.Enabled = true;
-            timer1.Start();
-            button2.Text = "停止";
+            if (button2.Text == "开启")
+            {
+                IntPtr ptr = Marshal.GetFunctionPointerForDelegate(delegateCallback);//取回调函数的地址
+                IntPtr ptr1 = GCHandle.Alloc(test, GCHandleType.Pinned).AddrOfPinnedObject();//取test变量的地址
+                HOperatorSet.SetFramegrabberCallback(hv_AcqHandle, "transfer_end", ptr, ptr1);//注册回调函数
+                button2.Text = "关闭";
             returnNum();
             modelList.Enabled = false; }
             else 
-            {  
-                timer1.Enabled = false;
-                timer1.Stop();
-                button2.Text = "开始";
+            {                
+                button2.Text = "开启";
                 modelList.Enabled = true;
+
+                string modelName = modelList.SelectedItem.ToString();
+                int trueNumber = Convert.ToInt32(TrueNum.Text[0]);
+                int falseNumber = Convert.ToInt32(WrongNum.Text[0]);
+                int allNumber = Convert.ToInt32(allNum.Text[0]);
+                /*  chanPin cp = new chanPin();
+                  cp.modelName = modelName;
+                  cp.trueNumber = trueNumber;
+                  cp.falseNumber = falseNumber;
+                  cp.allNumber = allNumber;
+                  */
+                DataTable dt = new DataTable();
+                  dt.Columns.Add("模板名");
+                  dt.Columns.Add("相同");
+                  dt.Columns.Add("不同");
+                  dt.Columns.Add("总数");
+                DataRow dr = dt.NewRow();
+                object[] chanPin = { modelName, trueNumber, falseNumber, allNumber };
+                dr.ItemArray=chanPin;
+                dt.Rows.Add(dr);
+
+                Excel::Application xlsApp = new Excel::Application();
+                xlsApp.Workbooks.Add(true);
+                xlsApp.Cells[1][3] = "序号";
+                for (int i = 0; i < dt.Columns.Count; i++)
+                {
+                    xlsApp.Cells[i + 2][3] = dt.Columns[i].ColumnName;
+                }
+                xlsApp.Rows[3].HorizontalAlignment = Excel.XlVAlign.xlVAlignCenter;
+                for (int i = 0; i < dt.Rows.Count; i++)
+                {
+                    xlsApp.Cells[1][i + 4] = i.ToString();
+                    for (int j = 0; j < dt.Columns.Count; j++)
+                    {
+                        xlsApp.Cells[j + 2][i + 4] = dt.Rows[i][j];
+
+                    }
+                }
+                xlsApp.Rows[4].HorizontalAlignment = Excel.XlVAlign.xlVAlignCenter;
+
+                xlsApp.ActiveWorkbook.SaveAs("F:\\检测产品数据表.xlsx");
             }
         }       
 
@@ -83,11 +192,7 @@ namespace CameraImage
             HOperatorSet.GenEmptyObj(out ho_Image);
             HOperatorSet.GenEmptyObj(out ho_Circle);
             HOperatorSet.GenEmptyObj(out ho_ImageReduced);
-            //Image Acquisition 01: Code generated by Image Acquisition 01
 
-
-
-            //Image Acquisition 01: Do something
             for (hv_i = 1; (int)hv_i <= 4; hv_i = (int)hv_i + 1)
             {
                 try
@@ -145,25 +250,9 @@ namespace CameraImage
             Form1_Load(null,null);
         }
 
-        private void Form1_Load(object sender, EventArgs e)
-        {
-            modelList.Items.Clear();
-            DirectoryInfo dir = new DirectoryInfo("f:modelFiles/");
-            DirectoryInfo[] subDirs = dir.GetDirectories();
-            foreach (DirectoryInfo subDir in subDirs)
-            {
-                modelList.Items.Add(subDir.Name);
-            }
-            modelList.SelectedIndex = 0;
-        }
-
-        private void timer1_Tick(object sender, EventArgs e)
-        {             
-            checkModel();        }
-
-        private void checkModel()
+        private void checkModel(HObject ho_Image1)
         {      
-            HObject ho_Image1 = null;
+           // HObject ho_Image1 = null;
             HTuple hv_Row = new HTuple();
             HTuple hv_Column = new HTuple();
             HTuple hv_Width = new HTuple(), hv_Height = new HTuple();
@@ -171,8 +260,6 @@ namespace CameraImage
             HTuple hv_ModelID3 = new HTuple(), hv_ModelID4 = new HTuple();
             HTuple hv_ModelIDs = new HTuple(), hv_Angle = new HTuple();
             HTuple hv_Score = new HTuple(), hv_ModelIndex = new HTuple();
-            // Initialize local and output iconic variables 
-            HOperatorSet.GenEmptyObj(out ho_Image1);
 
             //Image Acquisition 01: Code generated by Image Acquisition 01
             HOperatorSet.GrabImageStart(hv_AcqHandle, -1);
@@ -196,8 +283,6 @@ namespace CameraImage
                 hv_ModelIDs = hv_ModelIDs.TupleConcat(hv_ModelID4);
             }
 
-                ho_Image1.Dispose();
-                HOperatorSet.GrabImageAsync(out ho_Image1, hv_AcqHandle, -1);
                 HOperatorSet.GetImageSize(ho_Image1, out hv_Width, out hv_Height);
                 if (hWindowControl1.HalconWindow.ToString() == "") { return; }
                 HOperatorSet.SetPart(hWindowControl1.HalconWindow, 0, 0, hv_Width+1, hv_Height+1);
@@ -235,4 +320,12 @@ namespace CameraImage
                   hv_ModelIndex.Dispose();*/
             }
         }
-    }
+   /* public class chanPin
+    {
+        public string modelName { get; set; }
+        public int trueNumber { get; set; }
+        public int falseNumber { get; set; }
+        public int allNumber { get; set; }
+        public DateTime dataTime { get; set; }
+    }*/
+}
