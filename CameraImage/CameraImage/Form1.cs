@@ -37,9 +37,8 @@ namespace CameraImage
                 modelList.Items.Add(subDir.Name);
             }
             modelList.SelectedIndex = 0;
-            checkCamera();
-            //下面开启硬触发
-            HOperatorSet.SetFramegrabberParam(hv_AcqHandle, "trigger_mode", 2);
+            
+            
             /*HOperatorSet.SetFramegrabberParam(hv_AcqHandle, "TriggerSource", "Line1");
             //下面设置连续采集，上升沿触发，曝光模式等
             HOperatorSet.SetFramegrabberParam(hv_AcqHandle, "AcquisitionMode", "Continuous");
@@ -50,10 +49,10 @@ namespace CameraImage
             HOperatorSet.SetFramegrabberParam(hv_AcqHandle, "ExposureTime", 80000.0);
             //下面为设置用不超时
             HOperatorSet.SetFramegrabberParam(hv_AcqHandle, "grab_timeout", -1);*/
-            HOperatorSet.SetFramegrabberParam(hv_AcqHandle, "grab_timeout", -1);
-           // IntPtr ptr = Marshal.GetFunctionPointerForDelegate(delegateCallback);//取回调函数的地址
+            // IntPtr ptr = Marshal.GetFunctionPointerForDelegate(delegateCallback);//取回调函数的地址
             //IntPtr ptr1 = GCHandle.Alloc(test, GCHandleType.Pinned).AddrOfPinnedObject();//取test变量的地址
-           // HOperatorSet.SetFramegrabberCallback(hv_AcqHandle, "transfer_end", ptr, ptr1);//注册回调函数
+            // HOperatorSet.SetFramegrabberCallback(hv_AcqHandle, "transfer_end", ptr, ptr1);//注册回调函数
+            checkCamera();
         }
         void checkCamera()
         {
@@ -63,15 +62,11 @@ namespace CameraImage
                 hv_AcqHandle.Dispose();
                 HOperatorSet.OpenFramegrabber("MindVision17_X64", 1, 1, 0, 0, 0, 0, "progressive",
                  8, "Gray", -1, "false", "auto", "oufang", 0, -1, out hv_AcqHandle);
-                btnAddModel.Enabled = true;
-                button2.Enabled = true;
             }
             catch (Exception)
             {
                 MessageBox.Show("未检测到相机！");
-                btnAddModel.Enabled = false;
-                button2.Enabled = false;
-                return;
+                this.Close();
             }
         }
 
@@ -112,28 +107,32 @@ namespace CameraImage
         private void RealTimeSnap_Click(object sender, EventArgs e)
         {
             if (button2.Text == "开启")
-            {
+            { //下面开启硬触发
+                HOperatorSet.SetFramegrabberParam(hv_AcqHandle, "trigger_mode", 2);
+                HOperatorSet.SetFramegrabberParam(hv_AcqHandle, "grab_timeout", -1);
                 IntPtr ptr = Marshal.GetFunctionPointerForDelegate(delegateCallback);//取回调函数的地址
                 IntPtr ptr1 = GCHandle.Alloc(test, GCHandleType.Pinned).AddrOfPinnedObject();//取test变量的地址
                 HOperatorSet.SetFramegrabberCallback(hv_AcqHandle, "transfer_end", ptr, ptr1);//注册回调函数
                 button2.Text = "关闭";
             returnNum();
-            modelList.Enabled = false; }
+            modelList.Enabled = false;
+                btnAddModel.Enabled = false;
+            }
             else 
             {                
                 button2.Text = "开启";
                 modelList.Enabled = true;
-
-                string modelName = modelList.SelectedItem.ToString();
-                int trueNumber = Convert.ToInt32(TrueNum.Text[0]);
-                int falseNumber = Convert.ToInt32(WrongNum.Text[0]);
-                int allNumber = Convert.ToInt32(allNum.Text[0]);
-                /*  chanPin cp = new chanPin();
-                  cp.modelName = modelName;
-                  cp.trueNumber = trueNumber;
-                  cp.falseNumber = falseNumber;
-                  cp.allNumber = allNumber;
-                  */
+                btnAddModel.Enabled = true;
+                /* string modelName = modelList.SelectedItem.ToString();
+                 int trueNumber = Convert.ToInt32(TrueNum.Text[0]);
+                 int falseNumber = Convert.ToInt32(WrongNum.Text[0]);
+                 int allNumber = Convert.ToInt32(allNum.Text[0]);
+                   chanPin cp = new chanPin();
+                   cp.modelName = modelName;
+                   cp.trueNumber = trueNumber;
+                   cp.falseNumber = falseNumber;
+                   cp.allNumber = allNumber;
+                   
                 DataTable dt = new DataTable();
                   dt.Columns.Add("模板名");
                   dt.Columns.Add("相同");
@@ -163,12 +162,13 @@ namespace CameraImage
                 }
                 xlsApp.Rows[4].HorizontalAlignment = Excel.XlVAlign.xlVAlignCenter;
 
-                xlsApp.ActiveWorkbook.SaveAs("F:\\检测产品数据表.xlsx");
+                xlsApp.ActiveWorkbook.SaveAs("F:\\检测产品数据表.xlsx");*/
             }
         }       
 
         private void btnAddModel_Click(object sender, EventArgs e)
         {
+            HOperatorSet.SetFramegrabberParam(hv_AcqHandle, "trigger_mode", 1);
             string word = Interaction.InputBox("请输入密码", "身份验证", "", 100, 100);
             if (word != "123456") { MessageBox.Show("密码错误！"); return; }
             string str = Interaction.InputBox("请输入模板名字", "创建模板", "", 100, 100);
@@ -197,11 +197,11 @@ namespace CameraImage
             {
                 try
                 {             
-                HOperatorSet.GrabImageStart(hv_AcqHandle, -1);
+              // HOperatorSet.GrabImageStart(hv_AcqHandle, -1);
                 if ((int)hv_i!=1) MessageBox.Show("请将要识别物体顺时针旋转"+ ((int)hv_i-1) * 90+"度，再点击确定");
                 else { MessageBox.Show("单击鼠标左键并拖动选择模板区域，右键确定！");}
                 ho_Image.Dispose();
-                HOperatorSet.GrabImageAsync(out ho_Image, hv_AcqHandle, -1);
+                HOperatorSet.GrabImage(out ho_Image, hv_AcqHandle);
                 hv_Width.Dispose(); hv_Height.Dispose();
                 HOperatorSet.GetImageSize(ho_Image, out hv_Width, out hv_Height);
                 HOperatorSet.SetWindowAttr("background_color", "red");
