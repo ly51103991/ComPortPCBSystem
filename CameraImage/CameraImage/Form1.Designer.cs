@@ -44,6 +44,8 @@
             this.checkOnlineTimer = new System.Windows.Forms.Timer(this.components);
             this.label5 = new System.Windows.Forms.Label();
             this.camStatus = new System.Windows.Forms.Label();
+            this.timeCam = new System.Windows.Forms.Label();
+            this.lazyTime = new System.Windows.Forms.TextBox();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
             // 
@@ -167,25 +169,43 @@
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(176, 18);
+            this.label5.Location = new System.Drawing.Point(137, 18);
             this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(65, 12);
+            this.label5.Size = new System.Drawing.Size(59, 12);
             this.label5.TabIndex = 18;
-            this.label5.Text = "相机状态：";
+            this.label5.Text = "相机状态:";
             // 
             // camStatus
             // 
             this.camStatus.AutoSize = true;
-            this.camStatus.ForeColor = System.Drawing.Color.Red;
-            this.camStatus.Location = new System.Drawing.Point(245, 18);
+            this.camStatus.ForeColor = System.Drawing.Color.Green;
+            this.camStatus.Location = new System.Drawing.Point(208, 18);
             this.camStatus.Name = "camStatus";
             this.camStatus.Size = new System.Drawing.Size(29, 12);
             this.camStatus.TabIndex = 19;
-            this.camStatus.Text = "掉线";
+            this.camStatus.Text = "上线";
+            // 
+            // timeCam
+            // 
+            this.timeCam.AutoSize = true;
+            this.timeCam.Location = new System.Drawing.Point(282, 18);
+            this.timeCam.Name = "timeCam";
+            this.timeCam.Size = new System.Drawing.Size(71, 12);
+            this.timeCam.TabIndex = 20;
+            this.timeCam.Text = "延时(毫秒):";
+            // 
+            // lazyTime
+            // 
+            this.lazyTime.Location = new System.Drawing.Point(359, 12);
+            this.lazyTime.Name = "lazyTime";
+            this.lazyTime.Size = new System.Drawing.Size(52, 21);
+            this.lazyTime.TabIndex = 21;
             // 
             // Form1
             // 
             this.ClientSize = new System.Drawing.Size(517, 528);
+            this.Controls.Add(this.lazyTime);
+            this.Controls.Add(this.timeCam);
             this.Controls.Add(this.camStatus);
             this.Controls.Add(this.label5);
             this.Controls.Add(this.label1);
@@ -225,6 +245,8 @@
         private System.Windows.Forms.Timer checkOnlineTimer;
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.Label camStatus;
+        private System.Windows.Forms.Label timeCam;
+        private System.Windows.Forms.TextBox lazyTime;
     }
 }
 

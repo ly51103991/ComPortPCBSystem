@@ -29,15 +29,7 @@ namespace CameraImage
         private void Form1_Load(object sender, EventArgs e)
         {
             delegateCallback = takeCameraOne;
-            modelList.Items.Clear();
-            DirectoryInfo dir = new DirectoryInfo("f:modelFiles/");
-            DirectoryInfo[] subDirs = dir.GetDirectories();
-            foreach (DirectoryInfo subDir in subDirs)
-            {
-                modelList.Items.Add(subDir.Name);
-            }
-            modelList.SelectedIndex = 0;
-                    
+            updateList();
             /*HOperatorSet.SetFramegrabberParam(hv_AcqHandle, "TriggerSource", "Line1");
             //下面设置连续采集，上升沿触发，曝光模式等
             HOperatorSet.SetFramegrabberParam(hv_AcqHandle, "AcquisitionMode", "Continuous");
@@ -53,12 +45,23 @@ namespace CameraImage
             // HOperatorSet.SetFramegrabberCallback(hv_AcqHandle, "transfer_end", ptr, ptr1);//注册回调函数
             checkCamera();
         }
+
+        void updateList()
+        {
+            modelList.Items.Clear();
+            DirectoryInfo dir = new DirectoryInfo("f:modelFiles/");
+            DirectoryInfo[] subDirs = dir.GetDirectories();
+            foreach (DirectoryInfo subDir in subDirs)
+            {
+                modelList.Items.Add(subDir.Name);
+            }
+            modelList.SelectedIndex = 0;
+        }
+
         void checkCamera()
         {
             try
             {
-                hv_AcqHandle = new HTuple();
-                hv_AcqHandle.Dispose();
                 HOperatorSet.OpenFramegrabber("MindVision17_X64", 1, 1, 0, 0, 0, 0, "progressive",
                  8, "Gray", -1, "false", "auto", "oufang", 0, -1, out hv_AcqHandle);
                 checkOnlineTimer.Enabled = true;
@@ -88,9 +91,10 @@ namespace CameraImage
                 camStatus.Text = "上线";
                 camStatus.ForeColor = Color.Green;
                 button2.Enabled = true;
-                btnAddModel.Enabled = true;
+                if (button2.Text == "开启") {
+                btnAddModel.Enabled = true; }
+                }
             }
-        }
         void returnNum()
         {
             TrueNum.Text = "0";WrongNum.Text = "0";allNum.Text = "0";
@@ -114,7 +118,7 @@ namespace CameraImage
                 }
                 else
                 {
-                    checkModel(ho_image);
+                   // checkModel(ho_image);
                 }
                 return 0;
             }
@@ -123,14 +127,25 @@ namespace CameraImage
                 MessageBox.Show(ex.Message);
                 return -1;
             }
-            //checkModel();
         }
         private void RealTimeSnap_Click(object sender, EventArgs e)
         {
+            int lTime = 0;
+            try
+            {
+                if(Int32.Parse(lazyTime.Text)>0){ lTime = Int32.Parse(lazyTime.Text); }
+            }
+            catch (Exception)
+            {
+                MessageBox.Show("延迟设置错误！请输入正整数：");
+                return;
+            }
             if (button2.Text == "开启")
-            {              //下面开启硬触发
-                HOperatorSet.SetFramegrabberParam(hv_AcqHandle, "trigger_mode", 2);
+            {                
+               // MvApi.CameraSetExtTrigSignalType(hv_AcqHandle.H.TupleIsValidHandle(), 0); 
+                HOperatorSet.SetFramegrabberParam(hv_AcqHandle, "trigger_mode", 2);//开启硬触发
                 HOperatorSet.SetFramegrabberParam(hv_AcqHandle, "grab_timeout", -1);
+                HOperatorSet.SetFramegrabberParam(hv_AcqHandle, "trigger_delay_time", lTime*1000); 
                 IntPtr ptr = Marshal.GetFunctionPointerForDelegate(delegateCallback);//取回调函数的地址
                 IntPtr ptr1 = GCHandle.Alloc(test, GCHandleType.Pinned).AddrOfPinnedObject();//取test变量的地址
                 HOperatorSet.SetFramegrabberCallback(hv_AcqHandle, "transfer_end", ptr, ptr1);//注册回调函数
@@ -138,13 +153,14 @@ namespace CameraImage
                 returnNum();
                 modelList.Enabled = false;
                 btnAddModel.Enabled = false;
+                lazyTime.Enabled = false;
             }
             else 
             {
-                HOperatorSet.SetFramegrabberParam(hv_AcqHandle, "trigger_mode", 1);
                 button2.Text = "开启";
                 modelList.Enabled = true;
                 btnAddModel.Enabled = true;
+                lazyTime.Enabled = true;
                 /* string modelName = modelList.SelectedItem.ToString();
                  int trueNumber = Convert.ToInt32(TrueNum.Text[0]);
                  int falseNumber = Convert.ToInt32(WrongNum.Text[0]);
@@ -190,6 +206,8 @@ namespace CameraImage
 
         private void btnAddModel_Click(object sender, EventArgs e)
         {
+            HOperatorSet.SetFramegrabberParam(hv_AcqHandle, "trigger_mode", 1);
+            HOperatorSet.SetFramegrabberParam(hv_AcqHandle, "grab_timeout", -1);
             string word = Interaction.InputBox("请输入密码", "身份验证", "", 100, 100);
             if (word != "123456") { MessageBox.Show("密码错误！"); return; }
             string str = Interaction.InputBox("请输入模板名字", "创建模板", "", 100, 100);
@@ -213,19 +231,17 @@ namespace CameraImage
             HOperatorSet.GenEmptyObj(out ho_Image);
             HOperatorSet.GenEmptyObj(out ho_Circle);
             HOperatorSet.GenEmptyObj(out ho_ImageReduced);
-
             for (hv_i = 1; (int)hv_i <= 4; hv_i = (int)hv_i + 1)
             {
                 try
-                {             
-              // HOperatorSet.GrabImageStart(hv_AcqHandle, -1);
+                {                
                 if ((int)hv_i!=1) MessageBox.Show("请将要识别物体顺时针旋转"+ ((int)hv_i-1) * 90+"度，再点击确定");
                 else { MessageBox.Show("单击鼠标左键并拖动选择模板区域，右键确定！");}
-                ho_Image.Dispose();
+                //HOperatorSet.SetFramegrabberParam(hv_AcqHandle, "software_trig", 1);
                 HOperatorSet.GrabImage(out ho_Image, hv_AcqHandle);
                 hv_Width.Dispose(); hv_Height.Dispose();
                 HOperatorSet.GetImageSize(ho_Image, out hv_Width, out hv_Height);
-                HOperatorSet.SetWindowAttr("background_color", "red");
+               // HOperatorSet.SetWindowAttr("background_color", "red");
                 HOperatorSet.OpenWindow(0, 0, hv_Width + 1, hv_Height + 1, 0, "visible", "", out hv_WindowHandle);
                 HOperatorSet.DispImage(ho_Image, hv_WindowHandle);
                 HDevWindowStack.Push(hv_WindowHandle);
@@ -241,9 +257,9 @@ namespace CameraImage
                 HOperatorSet.WriteShapeModel(hv_ModelID, ("f:modelFiles/model-" + str+"/modle" + hv_i) + ".shm");
                 
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
-                    MessageBox.Show("区域选择出错！请重新添加模板。");
+                    MessageBox.Show("操作出错！请重新添加模板。"+ex.ToString());
                     foreach (string file in Directory.GetFileSystemEntries("f:modelFiles/model-" + str))
                     {
                         File.Delete(file);
@@ -264,16 +280,15 @@ namespace CameraImage
                 hv_Row.Dispose();
                 hv_Column.Dispose();
                 hv_Radius.Dispose();
-                hv_ModelID.Dispose();
+                hv_ModelID.Dispose();               
                 }
             }
             MessageBox.Show("模板创建成功！");
-            Form1_Load(null,null);
+            updateList();
         }
 
         private void checkModel(HObject ho_Image1)
         {      
-           // HObject ho_Image1 = null;
             HTuple hv_Row = new HTuple();
             HTuple hv_Column = new HTuple();
             HTuple hv_Width = new HTuple(), hv_Height = new HTuple();
@@ -282,9 +297,6 @@ namespace CameraImage
             HTuple hv_ModelIDs = new HTuple(), hv_Angle = new HTuple();
             HTuple hv_Score = new HTuple(), hv_ModelIndex = new HTuple();
 
-            //Image Acquisition 01: Code generated by Image Acquisition 01
-            HOperatorSet.GrabImageStart(hv_AcqHandle, -1);
-           
             hv_ModelID1.Dispose();
             HOperatorSet.ReadShapeModel("f:modelFiles/"+modelList.SelectedItem.ToString()+"/modle1.shm", out hv_ModelID1);
             hv_ModelID2.Dispose();
@@ -303,7 +315,6 @@ namespace CameraImage
                 hv_ModelIDs = hv_ModelIDs.TupleConcat(hv_ModelID3);
                 hv_ModelIDs = hv_ModelIDs.TupleConcat(hv_ModelID4);
             }
-
                 HOperatorSet.GetImageSize(ho_Image1, out hv_Width, out hv_Height);
                 if (hWindowControl1.HalconWindow.ToString() == "") { return; }
                 HOperatorSet.SetPart(hWindowControl1.HalconWindow, 0, 0, hv_Width+1, hv_Height+1);
